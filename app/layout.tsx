@@ -1,6 +1,7 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
+import { AlertProvider } from '@/components/alert-provider'
 
 export const metadata: Metadata = {
   title: 'MORYA GROUP — Digital donation receipts',
@@ -41,7 +42,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        {children}
+        <AlertProvider>
+          {children}
+        </AlertProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>
