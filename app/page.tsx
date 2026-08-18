@@ -1,21 +1,17 @@
-export default function Page() {
-  return (
-    <main
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        flexDirection: "column",
-        gap: "16px",
-        fontFamily: "Arial, sans-serif",
-      }}
-    >
-      <h1>Receipt Generator</h1>
+import ReceiptApp from "@/components/receipt-app";
+import { getExpenses, getReceipts } from "./actions";
 
-      <p>Vercel deployment is working.</p>
+export const dynamic = "force-dynamic";
 
-      <p>Test page loaded successfully.</p>
-    </main>
-  );
+export default async function Page() {
+  let receipts: any[] = [];
+  let expenses: any[] = [];
+
+  try {
+    [receipts, expenses] = await Promise.all([getReceipts(), getExpenses()]);
+  } catch (e) {
+    console.error("Failed to fetch initial data:", e);
+  }
+
+  return <ReceiptApp initialReceipts={receipts} initialExpenses={expenses} />;
 }
