@@ -1,18 +1,21 @@
-import { getReceipts, getExpenses } from './actions'
-import ReceiptApp from '@/components/receipt-app'
+export default function Page() {
+  return (
+    <main
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexDirection: "column",
+        gap: "16px",
+        fontFamily: "Arial, sans-serif",
+      }}
+    >
+      <h1>Receipt Generator</h1>
 
-export const dynamic = 'force-dynamic'
+      <p>Vercel deployment is working.</p>
 
-export default async function Page() {
-  let receipts: any[] = []
-  let expenses: any[] = []
-
-  try {
-    ;[receipts, expenses] = await Promise.all([getReceipts(), getExpenses()])
-  } catch (e) {
-    // DB error - app still loads with empty state
-    console.error('Failed to fetch initial data:', e)
-  }
-
-  return <ReceiptApp initialReceipts={receipts} initialExpenses={expenses} />
+      <p>Test page loaded successfully.</p>
+    </main>
+  );
 }
