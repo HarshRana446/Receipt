@@ -159,9 +159,54 @@ export default function ReceiptApp({ initialReceipts, initialExpenses }: Props) 
     await showAlert({ type: 'success', title: 'Expense Deleted', message: 'The expense has been permanently deleted.', confirmText: 'OK' })
   }
 
-  function shareOnWhatsApp(receipt: Receipt) {
-    const text = `MORYA GROUP%0AReceipt No. ${receipt.receiptNo}%0AHouse No. ${receipt.houseNo}%0AAmount: ${formatMoney(receipt.amount)}%0APayment: ${receipt.paymentMethod}%0ADate: ${formatDate(receipt.date)}`
-    window.open(`https://wa.me/?text=${text}`, '_blank', 'noopener,noreferrer')
+  async function shareOnWhatsApp(receipt: Receipt) {
+    try {
+      // Dynamically import heavy libs so they don't bloat the initial bundle
+      const [html2canvasModule, jsPDFModule] = await Promise.all([
+        import('html2canvas'),
+        import('jspdf'),
+      ])
+      const html2canvas = html2canvasModule.default
+      const { jsPDF } = jsPDFModule
+
+      const element = document.getElementById('printable-receipt')
+      if (!element) throw new Error('Receipt element not found')
+
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+      })
+
+      const imgData = canvas.toDataURL('image/png')
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: [canvas.width / 2, canvas.height / 2] })
+      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width / 2, canvas.height / 2)
+
+      const pdfBlob = pdf.output('blob')
+      const fileName = `MORYA-Receipt-${receipt.receiptNo}.pdf`
+      const file = new File([pdfBlob], fileName, { type: 'application/pdf' })
+
+      // Use Web Share API with file if supported (works on Android Chrome / iOS Safari)
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: `MORYA GROUP – Receipt #${receipt.receiptNo}`,
+        })
+      } else {
+        // Fallback: download the PDF locally
+        const url = URL.createObjectURL(pdfBlob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = fileName
+        a.click()
+        URL.revokeObjectURL(url)
+      }
+    } catch (err) {
+      console.error('Share failed, falling back to text', err)
+      // Last-resort text fallback
+      const text = `MORYA GROUP%0AReceipt No. ${receipt.receiptNo}%0AHouse No. ${receipt.houseNo}%0AAmount: ${formatMoney(receipt.amount)}%0APayment: ${receipt.paymentMethod}%0ADate: ${formatDate(receipt.date)}`
+      window.open(`https://wa.me/?text=${text}`, '_blank', 'noopener,noreferrer')
+    }
   }
 
   return <main className="receipt-app">
