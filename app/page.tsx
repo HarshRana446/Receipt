@@ -1,5 +1,7 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
+
 import { useEffect, useMemo, useState } from 'react'
 import { CalendarDays, Check, Edit3, FileDown, IndianRupee, Menu, MessageCircle, Plus, ReceiptText, Sparkles, Trash2, X, Wallet, AlignLeft } from 'lucide-react'
 import { getReceipts, createReceipt, updateReceipt, deleteReceipt, getNextReceiptNumber, getExpenses, createExpense, updateExpense, deleteExpense } from './actions'
