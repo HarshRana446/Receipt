@@ -49,6 +49,21 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
+        {/* Splash loader – hidden after 1000–1200 ms via inline script */}
+        <div id="ganesh-loader" className="ganesh-loader">
+          <img
+            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/WhatsApp%20Image%202026-08-16%20at%207.17.43%20PM-4XxX7fKWMzPhks0uj7hRUfdmZSLuFy.jpeg"
+            alt="Morya Group"
+          />
+          <p>MORYA GROUP</p>
+          <strong>LOADING…</strong>
+        </div>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){var d=Math.floor(Math.random()*201)+1000;setTimeout(function(){var el=document.getElementById('ganesh-loader');if(el)el.setAttribute('data-hidden','true');},d);})();`,
+          }}
+        />
+
         <AlertProvider>{children}</AlertProvider>
 
         {process.env.NODE_ENV === "production" && <Analytics />}
