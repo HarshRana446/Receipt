@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useMemo, useState, useTransition } from 'react'
-import { CalendarDays, Check, Edit3, FileDown, IndianRupee, Menu, MessageCircle, Plus, ReceiptText, Sparkles, Trash2, X, Wallet, AlignLeft } from 'lucide-react'
-import { createReceipt, updateReceipt, deleteReceipt, getExpenses, createExpense, updateExpense, deleteExpense, getReceipts } from '@/app/actions'
+import { useEffect, useMemo, useState } from 'react'
+import { CalendarDays, Check, Edit3, FileDown, IndianRupee, Menu, MessageCircle, Moon, Plus, ReceiptText, Sparkles, Sun, Trash2, TrendingUp, X, Wallet, AlignLeft } from 'lucide-react'
+import { createReceipt, updateReceipt, deleteReceipt, createExpense, updateExpense, deleteExpense } from '@/app/actions'
 import { useAlert } from '@/components/alert-provider'
 
 type PaymentMethod = 'Cash' | 'Online'
@@ -12,6 +12,7 @@ type Expense = { id: string; _id: string; description: string; amount: number; d
 type ExpenseFormState = { description: string; amount: string; date: string }
 
 const GANESH_IMAGE = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/WhatsApp%20Image%202026-08-16%20at%207.17.43%20PM-4XxX7fKWMzPhks0uj7hRUfdmZSLuFy.jpeg'
+const GANPATI_AAGMAN_TEXT = 'Ganpati Aagman Date 12 Sep.'
 const today = () => new Date().toISOString().slice(0, 10)
 const formatMoney = (value: number) => `Rs. ${value.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`
 const formatDate = (value: string) => new Intl.DateTimeFormat('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date(`${value}T00:00:00`))
@@ -44,7 +45,23 @@ export default function ReceiptApp({ initialReceipts, initialExpenses }: Props) 
   const [editingExpenseId, setEditingExpenseId] = useState<string | null>(null)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [darkMode, setDarkMode] = useState(false)
   const showAlert = useAlert()
+
+  // Persist dark mode preference
+  useEffect(() => {
+    const saved = localStorage.getItem('darkMode')
+    if (saved === 'true') setDarkMode(true)
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem('darkMode', String(darkMode))
+    if (darkMode) {
+      document.documentElement.classList.add('dark-mode')
+    } else {
+      document.documentElement.classList.remove('dark-mode')
+    }
+  }, [darkMode])
 
   const totals = useMemo(() => {
     const todayReceipts = receipts.filter((r) => r.date === today())
@@ -56,6 +73,8 @@ export default function ReceiptApp({ initialReceipts, initialExpenses }: Props) 
       totalExpenses: expenses.reduce((s, e) => s + e.amount, 0),
     }
   }, [receipts, expenses])
+
+  const remaining = totals.total - totals.totalExpenses
 
   function updateReceiptField(field: keyof ReceiptFormState, value: string) { setReceiptForm(c => ({ ...c, [field]: value })); setReceiptErrors(c => ({ ...c, [field]: undefined })) }
   function updateExpenseField(field: keyof ExpenseFormState, value: string) { setExpenseForm(c => ({ ...c, [field]: value })); setExpenseErrors(c => ({ ...c, [field]: undefined })) }
@@ -204,7 +223,7 @@ export default function ReceiptApp({ initialReceipts, initialExpenses }: Props) 
     } catch (err) {
       console.error('Share failed, falling back to text', err)
       // Last-resort text fallback
-      const text = `MORYA GROUP%0AReceipt No. ${receipt.receiptNo}%0AHouse No. ${receipt.houseNo}%0AAmount: ${formatMoney(receipt.amount)}%0APayment: ${receipt.paymentMethod}%0ADate: ${formatDate(receipt.date)}`
+      const text = `MORYA GROUP%0AReceipt No. ${receipt.receiptNo}%0AHouse No. ${receipt.houseNo}%0AAmount: ${formatMoney(receipt.amount)}%0APayment: ${receipt.paymentMethod}%0ADate: ${formatDate(receipt.date)}%0A${GANPATI_AAGMAN_TEXT}`
       window.open(`https://wa.me/?text=${text}`, '_blank', 'noopener,noreferrer')
     }
   }
@@ -215,7 +234,21 @@ export default function ReceiptApp({ initialReceipts, initialExpenses }: Props) 
         <div className="brand-mark"><img src={GANESH_IMAGE} alt="" /></div>
         <div><p className="brand-name">MORYA GROUP</p><p className="brand-caption">Digital records</p></div>
       </a>
-      <button className="mobile-menu" aria-label="Toggle menu" onClick={() => setMobileOpen(o => !o)}><Menu /></button>
+      <div className="topbar-controls">
+        <button
+          className="dark-toggle"
+          aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+          onClick={() => setDarkMode(d => !d)}
+          title={darkMode ? 'Light mode' : 'Dark mode'}
+        >
+          <span className="dark-toggle-track">
+            <span className="dark-toggle-thumb">
+              {darkMode ? <Moon /> : <Sun />}
+            </span>
+          </span>
+        </button>
+        <button className="mobile-menu" aria-label="Toggle menu" onClick={() => setMobileOpen(o => !o)}><Menu /></button>
+      </div>
       <nav className={mobileOpen ? 'top-nav is-open' : 'top-nav'} aria-label="Main navigation">
         <a className={activeTab === 'create' ? 'active' : ''} href="#" onClick={e => { e.preventDefault(); setActiveTab('create'); setMobileOpen(false) }}>Create</a>
         <a className={activeTab === 'receipts' ? 'active' : ''} href="#" onClick={e => { e.preventDefault(); setActiveTab('receipts'); setMobileOpen(false) }}>Receipts</a>
@@ -242,6 +275,12 @@ export default function ReceiptApp({ initialReceipts, initialExpenses }: Props) 
           <p>Total Expenses</p>
           <strong>{formatMoney(totals.totalExpenses)}</strong>
           <span>Across {expenses.length} expense{expenses.length === 1 ? '' : 's'}</span>
+        </article>
+        <article className={`summary-card remaining-summary${remaining < 0 ? ' remaining-negative' : ''}`}>
+          <div className="summary-icon remaining-icon"><TrendingUp /></div>
+          <p>Remaining Collection</p>
+          <strong>{formatMoney(Math.abs(remaining))}{remaining < 0 ? ' deficit' : ''}</strong>
+          <span>Total Collected − Total Expenses</span>
         </article>
       </section>
 
@@ -313,6 +352,8 @@ export default function ReceiptApp({ initialReceipts, initialExpenses }: Props) 
         <div className="preview-paper" id="printable-receipt">
           <div className="preview-ornament">|| श्री गणेशाय नमः ||</div>
           <div className="preview-brand"><div className="brand-mark"><img src={GANESH_IMAGE} alt="" /></div><div><strong>MORYA GROUP</strong><span>Digital donation receipt</span></div></div>
+          {/* Ganpati Aagman date – shown on every receipt */}
+          <div className="preview-aagman">{GANPATI_AAGMAN_TEXT}</div>
           <div className="preview-title"><p>RECEIPT</p><strong>#{selectedReceipt.receiptNo}</strong></div>
           <div className="preview-total"><span>Total paid</span><strong>{formatMoney(selectedReceipt.amount)}</strong></div>
           <div className="preview-details"><div><span>House / donor no.</span><strong>{selectedReceipt.houseNo}</strong></div><div><span>Payment method</span><strong>{selectedReceipt.paymentMethod}</strong></div><div><span>Date issued</span><strong>{formatDate(selectedReceipt.date)}</strong></div></div>

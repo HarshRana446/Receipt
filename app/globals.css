@@ -33,3 +33,85 @@
 .custom-alert-confirm:hover { filter: brightness(1.08); }
 .custom-alert-confirm:active { transform: scale(.97); }
 
+/* ── Dark Mode ──────────────────────────────────────────── */
+html.dark-mode {
+  color-scheme: dark;
+  --background: #1a0f0b;
+  --foreground: #f5ede3;
+  --card: #261510;
+  --card-foreground: #f5ede3;
+  --primary: #e8402f;
+  --primary-foreground: #fff8f0;
+  --muted: #2e1a14;
+  --muted-foreground: #a07060;
+  --border: #3d2218;
+  --input: #3d2218;
+  --ring: #c28a22;
+  --gold: #d4a030;
+  --maroon: #e8705a;
+  --error: #e05040;
+  --error-muted: #2d1512;
+}
+
+html.dark-mode body { background: var(--background); color: var(--foreground); }
+html.dark-mode .receipt-app { background: var(--background); }
+html.dark-mode .topbar { background: rgba(26,15,11,.95); border-color: var(--border); }
+html.dark-mode .top-nav { background: var(--card); border-color: var(--border); }
+html.dark-mode .entry-card,
+html.dark-mode .receipt-list,
+html.dark-mode .summary-card { background: var(--card); border-color: var(--border); }
+html.dark-mode .summary-primary { background: #5e1710; border-color: #7a2215; }
+html.dark-mode .field input,
+html.dark-mode .amount-input,
+html.dark-mode .date-input { background: #1f120d; border-color: var(--input); color: var(--foreground); }
+html.dark-mode .method-toggle { background: var(--muted); }
+html.dark-mode .method-toggle button.selected { background: var(--card); color: var(--maroon); }
+html.dark-mode .receipt-row:hover { background: #2e1a14; }
+html.dark-mode .payment-badge { background: #3a2010; color: var(--maroon); }
+html.dark-mode .receipt-modal { background: var(--card); }
+html.dark-mode .preview-paper { background: #1f120d; border-color: var(--border); }
+html.dark-mode .close-modal { background: var(--muted); color: var(--muted-foreground); }
+html.dark-mode .outline-action { background: transparent; color: var(--maroon); border-color: var(--border); }
+html.dark-mode .edit-action { background: #3a2010; color: var(--maroon); border-color: var(--border); }
+html.dark-mode .tab-toggles { background: var(--card); border-color: var(--border); }
+html.dark-mode .custom-alert-box { background: var(--card); border-color: var(--border); }
+html.dark-mode .summary-icon { background: #3a2010; color: var(--maroon); }
+html.dark-mode .summary-primary .summary-icon { background: rgba(240,217,157,.15); }
+
+/* ── Dark-mode Toggle Button ────────────────────────────── */
+.topbar-controls { display: flex; align-items: center; gap: 8px; }
+.dark-toggle { display: flex; align-items: center; border: none; background: transparent; cursor: pointer; padding: 4px; border-radius: 20px; }
+.dark-toggle-track { position: relative; display: flex; align-items: center; width: 52px; height: 28px; border-radius: 14px; background: var(--muted); border: 1.5px solid var(--border); transition: background .25s, border-color .25s; }
+html.dark-mode .dark-toggle-track { background: #3d2218; border-color: var(--gold); }
+.dark-toggle-thumb { position: absolute; left: 3px; display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: var(--card); box-shadow: 0 1px 4px rgba(0,0,0,.18); transition: left .22s cubic-bezier(.34,1.56,.64,1), background .25s; }
+html.dark-mode .dark-toggle-thumb { left: calc(100% - 25px); background: var(--gold); }
+.dark-toggle-thumb svg { width: 13px; height: 13px; color: var(--maroon); }
+html.dark-mode .dark-toggle-thumb svg { color: #1a0f0b; }
+
+/* Keep mobile-menu only visible on small screens */
+@media (min-width: 721px) { .mobile-menu { display: none !important; } }
+
+/* ── Ganpati Aagman text on receipt ─────────────────────── */
+.preview-aagman { margin-top: 10px; padding: 5px 12px; background: #f0d99d; color: var(--maroon); font: 700 11px 'DM Mono', monospace; letter-spacing: .08em; text-align: center; border-radius: 4px; border: 1px solid var(--gold); }
+html.dark-mode .preview-aagman { background: #3a2010; border-color: var(--gold); color: var(--gold); }
+
+/* ── Remaining Collection card ───────────────────────────── */
+.remaining-summary { background: linear-gradient(135deg, #e8f5e9, #f1f8e9); border-color: #a5d6a7; }
+.remaining-summary strong { color: #2e7d32; }
+.remaining-summary .remaining-icon { background: #c8e6c9; color: #2e7d32; }
+.remaining-summary span { color: #558b2f; }
+.remaining-negative { background: linear-gradient(135deg, #fbe9e7, #fff3e0); border-color: #ef9a9a; }
+.remaining-negative strong { color: var(--error); }
+.remaining-negative .remaining-icon { background: var(--error-muted); color: var(--error); }
+.remaining-negative span { color: var(--error); }
+html.dark-mode .remaining-summary { background: #0d2010; border-color: #2e4f30; }
+html.dark-mode .remaining-summary strong { color: #81c784; }
+html.dark-mode .remaining-summary .remaining-icon { background: #1b3820; color: #81c784; }
+html.dark-mode .remaining-summary span { color: #a5d6a7; }
+html.dark-mode .remaining-negative { background: #1e0d0b; border-color: #5a1f1a; }
+html.dark-mode .remaining-negative strong { color: #ef9a9a; }
+html.dark-mode .remaining-negative span { color: #ef9a9a; }
+
+/* 4-column summary grid on wider screens */
+@media (min-width: 900px) { .summary-grid { grid-template-columns: 1fr 1fr 1fr 1fr; } }
+
